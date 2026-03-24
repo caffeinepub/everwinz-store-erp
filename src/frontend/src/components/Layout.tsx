@@ -10,6 +10,7 @@ import {
   PackageCheck,
   ShoppingCart,
   Truck,
+  Users,
   WifiOff,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -19,14 +20,45 @@ import { useNetworkStatus } from "../hooks/useNetworkStatus";
 import { useOfflineQueue } from "../hooks/useOfflineQueue";
 
 const NAV = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "suppliers", label: "Suppliers", icon: Building2 },
-  { id: "purchase-orders", label: "Purchase Orders", icon: ShoppingCart },
-  { id: "mrn", label: "Materials Request", icon: ClipboardList },
-  { id: "grn", label: "Goods Received", icon: PackageCheck },
-  { id: "delivery-challan", label: "Delivery Challan", icon: Truck },
-  { id: "mcr", label: "Store MCR", icon: BarChart3 },
-  { id: "closing-stock", label: "Closing Stock", icon: Archive },
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    adminOnly: false,
+  },
+  { id: "suppliers", label: "Suppliers", icon: Building2, adminOnly: false },
+  {
+    id: "purchase-orders",
+    label: "Purchase Orders",
+    icon: ShoppingCart,
+    adminOnly: false,
+  },
+  {
+    id: "mrn",
+    label: "Materials Request",
+    icon: ClipboardList,
+    adminOnly: false,
+  },
+  { id: "grn", label: "Goods Received", icon: PackageCheck, adminOnly: false },
+  {
+    id: "delivery-challan",
+    label: "Delivery Challan",
+    icon: Truck,
+    adminOnly: false,
+  },
+  { id: "mcr", label: "Store MCR", icon: BarChart3, adminOnly: false },
+  {
+    id: "closing-stock",
+    label: "Closing Stock",
+    icon: Archive,
+    adminOnly: false,
+  },
+  {
+    id: "user-management",
+    label: "User Management",
+    icon: Users,
+    adminOnly: true,
+  },
 ];
 
 interface LayoutProps {
@@ -67,6 +99,11 @@ export default function Layout({
   const showOfflineBanner = !isOnline;
   const showOnlineSyncBanner = isOnline && showSyncBanner;
 
+  const visibleNav = NAV.filter((item) => {
+    if (item.adminOnly) return user?.role === "admin";
+    return true;
+  });
+
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {sidebarOpen && (
@@ -104,13 +141,14 @@ export default function Layout({
         </div>
 
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {NAV.map((item) => {
+          {visibleNav.map((item) => {
             const Icon = item.icon;
             const active = currentPage === item.id;
             return (
               <button
                 type="button"
                 key={item.id}
+                data-ocid={`nav.${item.id}.link`}
                 onClick={() => {
                   onNavigate(item.id);
                   setSidebarOpen(false);
@@ -118,7 +156,9 @@ export default function Layout({
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active
                     ? "bg-blue-700 text-white"
-                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    : item.id === "user-management"
+                      ? "text-purple-700 hover:bg-purple-50"
+                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >
                 <Icon size={18} />

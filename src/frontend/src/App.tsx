@@ -10,6 +10,7 @@ import MRN from "./pages/MRN";
 import PurchaseOrders from "./pages/PurchaseOrders";
 import StoreMCR from "./pages/StoreMCR";
 import Suppliers from "./pages/Suppliers";
+import UserManagement from "./pages/UserManagement";
 
 function AppRoutes() {
   const { user } = useAuth();
@@ -43,6 +44,8 @@ function AppRoutes() {
         return <StoreMCR />;
       case "closing-stock":
         return <ClosingStock />;
+      case "user-management":
+        return <UserManagement />;
       default:
         return <Dashboard onNavigate={setPage} />;
     }
